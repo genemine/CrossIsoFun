@@ -73,7 +73,7 @@ class VIGANModel(BaseModel):
             self.fake_C_pool = ImagePool(opt.pool_size)
 
             # define loss functions
-            self.criterionGAN = networks.GANLoss(use_lsgan=not opt.no_lsgan, tensor=self.Tensor, gpu_ids=self.gpu_ids)
+            self.criterionGAN = networks.GANLoss(use_lsgan=not opt.no_lsgan, tensor=self.Tensor, device=self.device)
             self.criterionCycle = torch.nn.L1Loss()
             self.criterionCycle_C = torch.nn.BCELoss()
             self.criterionAE = torch.nn.MSELoss()
@@ -1405,7 +1405,7 @@ class VIGANModel(BaseModel):
         # Generator prediction loss
         AE_G_C = self.loss_G_C.item()
 
-        # AutoEncoder recovery loss
+        # AutoEncoder loss
         AE = self.loss_AE.item()
 
         # PPI generation loss
@@ -1420,15 +1420,9 @@ class VIGANModel(BaseModel):
         cycle_loss = self.loss_cycle.item()
 
 
-        return OrderedDict([  # ('G_A', AE_G_A),
-            # ('G_B', AE_G_B),
+        return OrderedDict([
             ('G_C', AE_G_C),
-            # ('D_A', AE_D_A),
-            # ('D_B', AE_D_B),
             ('D_C', AE_D_C),
-            # ('AE_A', AE_A),
-            # ('AE_B', AE_B),
-            # ('AE_C', AE_C),
             ('AE', AE),
             ('cycle', cycle_loss),
             ('PPI', PPI), ('PPI_fake', PPI_fake), ('expr', PPI_A), ('seqdm', PPI_B), ('ALL', ALL_loss)])
@@ -1436,14 +1430,12 @@ class VIGANModel(BaseModel):
     def get_current_errors_cycle_pre_unpaired(self):
 
         # Discriminator judgement loss
-        # AE_D_A = self.loss_D_A_batch.item()
-        # AE_D_B = self.loss_D_B_f_batch.item()
         AE_D_C = self.loss_D_C_batch.item()
 
-        # AE_G_A = self.loss_G_A_batch.item()
-        # AE_G_B = self.loss_G_B_batch.item()
+        # Generator prediction loss
         AE_G_C = self.loss_G_C_batch.item()
 
+        # AutoEncoder loss
         AE = self.loss_AE_batch.item()
 
         # PPI generation loss
@@ -1451,11 +1443,11 @@ class VIGANModel(BaseModel):
         PPI_fake = self.loss_PPI_fake_batch.item()
         PPI_A = self.loss_PPI_A_batch.item()
         PPI_B = self.loss_PPI_B_batch.item()
-        # Generator prediction loss + AutoEncoder recovery loss + PPI generation loss + cycle GAN (recovery + generate (except PPI)) loss + cycle GAN (recovery + generate（PPI)) loss
+
+        # Generator prediction loss + AutoEncoder loss + PPI generation loss + cycleGAN (recovery + generate (except PPI)) loss + cycle GAN (recovery + generate（PPI)) loss
         ALL_loss = self.loss_G_batch.item()
 
         cycle_loss = self.loss_cycle_batch.item()
-
 
         return OrderedDict([
             ('G_C', AE_G_C),
@@ -1487,92 +1479,16 @@ class VIGANModel(BaseModel):
         return OrderedDict([('GCN_A', GCN_A), ('GCN_B', GCN_B), ('GCN_C', GCN_C),
                                 ('VCDN', VCDN)])
 
-    #     def get_current_errors_AE_CL(self):
-    # #        AE = self.loss_AE.item()
-    #         CLU_loss = self.loss_clustering.item()
-    #         AE = self.loss_AE.item()
-    #         if self.opt.identity > 0.0:
-    #             return OrderedDict([('CLU', CLU_loss), ('AE', AE)])
-    #         else:
-    #             return OrderedDict([ ('CLU', CLU_loss), ('AE', AE)])
-    #
-    #
-    #
-    #
-    #
-    #
-    #     def get_current_errors(self):
-    #         D_A = self.loss_D_A_AE.item()
-    #         G_A = self.loss_AE_GA.item()
-    #         Cyc_A = self.loss_cycle_A_AE.item()
-    #         D_B = self.loss_D_B_AE.item()
-    #         G_B = self.loss_AE_GB.item()
-    #         Cyc_B = self.loss_cycle_B_AE.item()
-    #         clu_loss = self.clustering_loss.item()
-    #         loss_all = self.loss_AE_GA_GB.item()
-    #         if self.opt.identity > 0.0:
-    #             idt_A = self.loss_idt_A.item()
-    #             idt_B = self.loss_idt_B.item()
-    #             return OrderedDict([('D_A', D_A), ('G_A', G_A), ('Cyc_A', Cyc_A), ('idt_A', idt_A),
-    #                                 ('D_B', D_B), ('G_B', G_B), ('Cyc_B', Cyc_B), ('idt_B', idt_B)])
-    #         else:
-    #             return OrderedDict([('D_A', D_A), ('G_A', G_A), ('Cyc_A', Cyc_A),('loss_all',loss_all),
-    #                                 ('D_B', D_B), ('G_B', G_B), ('Cyc_B', Cyc_B),('clu_loss',clu_loss)])
 
-    # def get_current_visuals(self):
-    #     real_A = util.tensor2im(self.real_A.data)
-    #     fake_B = util.tensor2im(self.fake_B.data)
-    #     rec_A  = util.tensor2im(self.rec_A.data)
-    #     real_B = util.tensor2im(self.real_B.data)
-    #     fake_A = util.tensor2im(self.fake_A.data)
-    #     rec_B  = util.tensor2im(self.rec_B.data)
-    #
-    #     AE_fake_A = util.tensor2im(self.AEfakeA.view(1,1,28,28).data)
-    #     AE_fake_B = util.tensor2im(self.AEfakeB.view(1,1,28,28).data)
-    #
-    #
-    #     if self.opt.identity > 0.0:
-    #         idt_A = util.tensor2im(self.idt_A.data)
-    #         idt_B = util.tensor2im(self.idt_B.data)
-    #         return OrderedDict([('real_A', real_A), ('fake_B', fake_B), ('rec_A', rec_A), ('idt_B', idt_B),
-    #                             ('real_B', real_B), ('fake_A', fake_A), ('rec_B', rec_B), ('idt_A', idt_A),
-    #                             ('AE_fake_A', AE_fake_A), ('AE_fake_B', AE_fake_B)])
-    #     else:
-    #         return OrderedDict([('real_A', real_A), ('fake_B', fake_B), ('rec_A', rec_A),
-    #                             ('real_B', real_B), ('fake_A', fake_A), ('rec_B', rec_B),
-    #                             ('AE_fake_A', AE_fake_A), ('AE_fake_B', AE_fake_B)])
-    #
     def save(self, i):
         self.save_network(self.netD_C, 'D_C', i, self.gpu_ids)
         self.save_network(self.AE, 'AE', i, self.gpu_ids)
 
     def save_GCN(self, i='after_GCN_pretrain'):
-        self.save_network(self.C1, 'C1', i, self.gpu_ids,self.tissue)
-        self.save_network(self.E1, 'E1', i, self.gpu_ids,self.tissue)
-        self.save_network(self.C2, 'C2', i, self.gpu_ids,self.tissue)
-        self.save_network(self.E2, 'E2', i, self.gpu_ids,self.tissue)
-        self.save_network(self.C3, 'C3', i, self.gpu_ids,self.tissue)
-        self.save_network(self.E3, 'E3', i, self.gpu_ids,self.tissue)
+        self.save_network(self.C1, 'C1', i, self.gpu_ids)
+        self.save_network(self.E1, 'E1', i, self.gpu_ids)
+        self.save_network(self.C2, 'C2', i, self.gpu_ids)
+        self.save_network(self.E2, 'E2', i, self.gpu_ids)
+        self.save_network(self.C3, 'C3', i, self.gpu_ids)
+        self.save_network(self.E3, 'E3', i, self.gpu_ids)
 
-        # self.save_network(self.netD_A, 'D_A', i, self.gpu_ids)
-        # self.save_network(self.netD_B, 'D_B', i, self.gpu_ids)
-        # self.save_network(self.netD_C, 'D_C', i, self.gpu_ids)
-        # self.save_network(self.AE, 'AE', i, self.gpu_ids)
-
-#
-# def update_learning_rate(self):
-#     lrd = self.opt.lr / self.opt.niter_decay
-#     lr = self.old_lr - lrd
-#     for param_group in self.optimizer_D_A.param_groups:
-#         param_group['lr'] = lr
-#     for param_group in self.optimizer_D_B.param_groups:
-#         param_group['lr'] = lr
-#     for param_group in self.optimizer_D_C.param_groups:
-#         param_group['lr'] = lr
-#     for param_group in self.optimizer_G.param_groups:
-#         param_group['lr'] = lr
-#
-#     print('update learning rate: %f -> %f' % (self.old_lr, lr))
-#     self.old_lr = lr
-
-# self.load_network(self.AE, 'AE', which_epoch)

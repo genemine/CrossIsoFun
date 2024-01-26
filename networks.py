@@ -366,14 +366,15 @@ def print_network(net):
 class GANLoss(nn.Module):
     def __init__(self, use_lsgan=True, target_real_label=1.0, target_fake_label=0.0,
                  # target_real_label=1.0, target_fake_label=0.0,
-                 tensor=torch.FloatTensor, gpu_ids = []):
+                 tensor=torch.FloatTensor, device = []):
         super(GANLoss, self).__init__()
         self.real_label = target_real_label
         self.fake_label = target_fake_label
+        self.device = device
         self.real_label_var = None
         self.fake_label_var = None
         self.Tensor = tensor
-        self.gpu_ids = gpu_ids
+
         if use_lsgan:
             self.loss = nn.MSELoss()
         else:
@@ -386,14 +387,14 @@ class GANLoss(nn.Module):
                             (self.real_label_var.numel() != input.numel()))
             if create_label:
                 self.real_label_var = torch.tensor(input.size(), dtype=torch.float, requires_grad=False)\
-                    .fill_(self.real_label).cuda(self.gpu_ids[0])
+                    .fill_(self.real_label).to(self.device)
             target_tensor = self.real_label_var
         else:
             create_label = ((self.fake_label_var is None) or
                             (self.fake_label_var.numel() != input.numel()))
             if create_label:
                 self.fake_label_var = torch.tensor(input.size(), dtype=torch.float, requires_grad=False) \
-                    .fill_(self.fake_label).cuda(self.gpu_ids[0])
+                    .fill_(self.fake_label).to(self.device)
             target_tensor = self.fake_label_var
         return target_tensor
 

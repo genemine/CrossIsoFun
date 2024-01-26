@@ -50,7 +50,7 @@ def train_test(data_folder):
     print(dim_list)
 
     model = create_model(opt, num_feature, num_label, dim_list, dim_he_list, dim_hvcdn, device)
-    torch.cuda.synchronize()
+    # torch.cuda.synchronize()
     model.calculate_class_weights(data_tr_list[2].to(torch.int).flatten())
 
     ############################################Training and Testing####################################################
@@ -182,7 +182,7 @@ def train_test(data_folder):
     labels_tr_tensor = torch.tensor(labels_trte[labels_trte_idx["tr"]], dtype=torch.float32)
 
     sample_weight_tr = np.zeros([len(labels_trte_idx["tr"]),
-                                 num_label])  # tensor: (N_trsample, 96)  label weight matrix: 若样本标签为0则值为count(0)/(count(0)+count(1)), 为1则为count(1)/(count(0)+count(1))
+                                 num_label])
     for GO in range(labels_trte.shape[1]):
         sample_weight_tr[:, GO] = cal_sample_weight(labels_trte[labels_trte_idx["tr"], GO], num_GOterm)
     sample_weight_tr = torch.tensor(sample_weight_tr)
