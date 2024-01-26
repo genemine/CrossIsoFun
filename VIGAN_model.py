@@ -172,8 +172,8 @@ class VIGANModel(BaseModel):
             target = torch.where(target == 0, self.class_weights[0], target)
             target = torch.where(target == 1, self.class_weights[1], target)
         except:
-            target = torch.ones(len(target)) * self.class_weights[0].to(self.device)
-        return target
+            target = torch.ones(len(target)) * self.class_weights[0]
+        return target.to(self.device)
 
 
     def set_input_AE_GCN(self, data_list, adj_list, labels_tensor, sample_weight, iso_gene):

@@ -29,7 +29,6 @@ def init_loss_dict(loss_type_list):
 def train_test(data_folder):
 
     test_inverval = 5
-    test_inverval_pretrain = 5
 
     data_tr_list, data_trte_list, trte_pair_unpair_idx, labels_trte, labels_trte_idx, iso_gene_trte, iso2gene, new_order, GO_list \
         = prepare_trte_data(data_folder)
@@ -67,7 +66,7 @@ def train_test(data_folder):
 
     if opt.continue_train == False:
 
-        pre_epoch_cycle = 1
+        pre_epoch_cycle = 50
         loss_type_list = ['AE', 'G_C', 'D_C', 'PPI', 'PPI_fake', 'expr', 'seqdm', 'cycle', 'ALL']
 
         epoch_train_loss = init_loss_dict(loss_type_list)
@@ -191,7 +190,7 @@ def train_test(data_folder):
     adj_trte_list = gen_te_adj_mat(data_trte_list, trte_idx, adj_parameter_adaptive_list)
 
     # start train
-    epoch_train_cycleGAN_GCN = 1
+    epoch_train_cycleGAN_GCN = 120
 
     iso_gene_tr_dict = {}
     iso_gene_tr_dict[0] = torch.tensor(iso_gene_tr[0].values)
@@ -235,7 +234,7 @@ def train_test(data_folder):
     # Step4: GCN + VCDN
     #################################################
     print("\n Train GCN + VCDN...")
-    epoch_train_GCN_VCDN = 5
+    epoch_train_GCN_VCDN = 150
 
     for epoch in range(1, epoch_train_GCN_VCDN + 1):
 
@@ -326,7 +325,6 @@ def train_test(data_folder):
                 print("Test AUPRC: {:.6f}".format(np.median(test_auprcs)))
                 print("SIG-level Test AUPRC: {:.6f}".format(np.median(test_sig_auprcs)))
                 print("SIG-level Test AUC: {:.6f}".format(np.median(test_sig_aucs)))
-                print("Train AUC: {:.6f}".format(np.median(train_aucs)))
                 print("\nTest: Epoch {:d}".format(epoch))
 
 
