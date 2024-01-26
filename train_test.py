@@ -67,7 +67,7 @@ def train_test(data_folder):
 
     if opt.continue_train == False:
 
-        pre_epoch_cycle = 50
+        pre_epoch_cycle = 1
         loss_type_list = ['AE', 'G_C', 'D_C', 'PPI', 'PPI_fake', 'expr', 'seqdm', 'cycle', 'ALL']
 
         epoch_train_loss = init_loss_dict(loss_type_list)
@@ -191,7 +191,7 @@ def train_test(data_folder):
     adj_trte_list = gen_te_adj_mat(data_trte_list, trte_idx, adj_parameter_adaptive_list)
 
     # start train
-    epoch_train_cycleGAN_GCN = 120
+    epoch_train_cycleGAN_GCN = 1
 
     iso_gene_tr_dict = {}
     iso_gene_tr_dict[0] = torch.tensor(iso_gene_tr[0].values)
@@ -235,7 +235,7 @@ def train_test(data_folder):
     # Step4: GCN + VCDN
     #################################################
     print("\n Train GCN + VCDN...")
-    epoch_train_GCN_VCDN = 150
+    epoch_train_GCN_VCDN = 5
 
     for epoch in range(1, epoch_train_GCN_VCDN + 1):
 
