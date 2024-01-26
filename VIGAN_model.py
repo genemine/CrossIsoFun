@@ -20,13 +20,13 @@ class VIGANModel(BaseModel):
         return 'VIGANModel'
 
     def initialize(self, opt, num_feature, num_label, dim_list, dim_he_list, dim_hvcdn, device,
-                   lr_e_pretrain_1=1e-3,  # 5e-3
-                   lr_e_pretrain_2=1e-4,  # 1e-4
-                   lr_e_pretrain_3=1e-3,  # 1e-3
-                   lr_e_1=1e-4,  # 1e-4
-                   lr_e_2=2e-4,  # 1e-4
-                   lr_e_3=5e-4,  # 5e-4
-                   lr_c=1e-5  # 5e-5
+                   lr_e_pretrain_1=1e-3,
+                   lr_e_pretrain_2=1e-4,
+                   lr_e_pretrain_3=1e-3,
+                   lr_e_1=1e-4,
+                   lr_e_2=2e-4,
+                   lr_e_3=5e-4,
+                   lr_c=1e-5
                    ):
 
         BaseModel.initialize(self, opt)
@@ -1396,24 +1396,6 @@ class VIGANModel(BaseModel):
     ############################################################################################
     # Get errors for visualization
     ############################################################################################
-    def get_current_errors_AE_pre(self):
-
-        AE = self.loss_AE_pre.item()
-        AE_A = self.loss_AE_A.item()
-        AE_B = self.loss_AE_B.item()
-        AE_C = self.loss_AE_C.item()
-        PPI_A = self.loss_PPI_A.item()
-        # PPI_B = self.loss_PPI_B.item()
-        PPI_C = self.loss_PPI_C.item()
-        PPI_D = self.loss_PPI_D.item()
-        if self.opt.identity > 0.0:
-            return OrderedDict(
-                [('AE', AE), ('AE_A', AE_A), ('AE_B', AE_B), ('AE_C', AE_C), ('PPI_A', PPI_A),
-                 ('PPI_C', PPI_C), ('PPI_D', PPI_D)])
-        else:
-            return OrderedDict(
-                [('AE', AE), ('AE_A', AE_A), ('AE_B', AE_B), ('AE_C', AE_C), ('PPI_A', PPI_A),
-                 ('PPI_C', PPI_C), ('PPI_D', PPI_D)])
 
     def get_current_errors_cycle_pre(self):
 
@@ -1449,7 +1431,7 @@ class VIGANModel(BaseModel):
             # ('AE_C', AE_C),
             ('AE', AE),
             ('cycle', cycle_loss),
-            ('PPI', PPI), ('PPI_fake', PPI_fake), ('PPI_A', PPI_A), ('PPI_B', PPI_B), ('ALL', ALL_loss)])
+            ('PPI', PPI), ('PPI_fake', PPI_fake), ('expr', PPI_A), ('seqdm', PPI_B), ('ALL', ALL_loss)])
 
     def get_current_errors_cycle_pre_unpaired(self):
 
@@ -1479,7 +1461,7 @@ class VIGANModel(BaseModel):
             ('G_C', AE_G_C),
             ('D_C', AE_D_C),
             ('AE', AE),
-            ('PPI', PPI), ('PPI_fake', PPI_fake), ('cycle', cycle_loss), ('PPI_A', PPI_A), ('PPI_B', PPI_B),
+            ('PPI', PPI), ('PPI_fake', PPI_fake), ('cycle', cycle_loss), ('expr', PPI_A), ('seqdm', PPI_B),
             ('ALL', ALL_loss)])
 
     def get_current_errors_cycleGAN_GCN(self):

@@ -68,7 +68,7 @@ def train_test(data_folder):
     if opt.continue_train == False:
 
         pre_epoch_cycle = 50
-        loss_type_list = ['AE', 'G_C', 'D_C', 'PPI', 'PPI_fake', 'PPI_A', 'PPI_B', 'cycle', 'ALL']
+        loss_type_list = ['AE', 'G_C', 'D_C', 'PPI', 'PPI_fake', 'expr', 'seqdm', 'cycle', 'ALL']
 
         epoch_train_loss = init_loss_dict(loss_type_list)
 
