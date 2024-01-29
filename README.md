@@ -13,17 +13,17 @@ CrossIsoFun is implemented in Python. It is tested on both MacOS and Linux opera
 
 ## 4.Dependency
 
-Python > 3.7.11
+Python >= 3.7.11
 
-torch > 2.0.1
+torch >= 2.0.1
 
-numpy > 1.24.3
+numpy >= 1.24.3
 
-pandas > 3.8.5
+pandas >= 3.8.5
 
-scikit-learn > 1.3.0
+scikit-learn >= 1.3.0
 
-torch_scatter > 2.1.2+pt20cu117
+torch_scatter >= 2.1.2+pt20cu117
 
 
 ## 5. Usage
