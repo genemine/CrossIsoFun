@@ -29,7 +29,7 @@ torch_scatter >= 2.1.2+pt20cu117
 We provide a demo script to show how to run CrossIsoFun. Run the following command from the command line:
 
 ```bash
-python CrossIsoFun.py ./data_demo/train_feature/ ./data_demo/test_feature/ ./data_demo/train_label_folder/ ./data_demo/output/
+python3.9 CrossIsoFun.py --train_feature ./data_demo/train_feature/ --test_feature ./data_demo/test_feature/ --train_label ./data_demo/train_label/ --output ./data_demo/output/
 ```
 
 With this command, you can straightforwardly implement and apply CrossIsoFun. It will first train a model and then make predictions on the demo data. Specifically, the input for the script includes four directories:
