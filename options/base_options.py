@@ -8,6 +8,10 @@ class BaseOptions():
         self.initialized = False
 
     def initialize(self):
+        self.parser.add_argument('--train_feature', type=str, required=True, help='Path to the train feature directory')
+        self.parser.add_argument('--test_feature', type=str, required=True, help='Path to the test feature directory')
+        self.parser.add_argument('--train_label', type=str, required=True, help='Path to the train label folder')
+        self.parser.add_argument('--output', type=str, required=True, help='Path to the output folder')
         self.parser.add_argument('--dataroot', help='path to images (should have subfolders trainA, trainB, valA, valB, etc)')
         self.parser.add_argument('--batchSize', type=int, default=64, help='input batch size')
         self.parser.add_argument('--loadSize', type=int, default=286, help='scale images to this size')
