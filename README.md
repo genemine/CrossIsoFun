@@ -51,7 +51,7 @@ With this command, you can straightforwardly implement and apply CrossIsoFun. It
 - `iso_gene.txt` records the mapping relationships between isoforms and genes in the testinging set.
 - `train_isoform_list.txt` lists the isoforms used as testing samples
 
-['./data_demo/output/'](./data_demo/output/) is the directory used to store the output file `iso_score.txt`. Specifically, `iso_score.txt` is a matrix containing the prediction scores obtained from CrossIsoFun. Each row of the matrix corresponds to an isoform and each column corresponds to a GO term (function). e.g. X<sub>ij</sub> is defined as the predicted probability that isoform i is annotated to the GO term j.
+['./data_demo/output/'](./data_demo/output/) is the directory used to store the output file `iso_score.txt`. Specifically, `iso_score.txt` is a matrix containing the prediction scores obtained from CrossIsoFun. Each row of the matrix corresponds to an isoform and each column corresponds to a GO term (function). e.g. X<sub>ij</sub> denotes the predicted probability that isoform i is annotated to the GO term j.
 
 ## 6. Contact
 If any questions, please do not hesitate to contact me at:
