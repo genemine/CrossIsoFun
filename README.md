@@ -6,29 +6,6 @@ CrossIsoFun is a multi-omics data integration framework for isoform function pre
 ## 2. Input data
 The expression profiles, sequence features, and PPI data of isoforms are required as input for CrossIsoFun. The demo input data are provided in the folder 'data_demo', which includes training data for building models and test data for evaluating the performance of CrossIsoFun.
 
-（1) training data
-
-    ./data_demo/train_feature/iso_expr.txt -- expression profiles of isoforms in training dataset
-
-    ./data_demo/train_feature/iso_seqdm.txt -- sequence features of isoforms in training dataset
-
-
-（2) training labels
-
-    ./data_demo/train_labels/num_GO_map.txt -- mapping from GO terms to their indices in the experiment
-
-    ./data_demo/train_feature/goterms/GO_XXXXXXX.txt -- genes annotated to the GO term GO:XXXXXXX 
-
-（3) testing data
-
-    ./data_demo/test_feature/iso_expr.txt -- expression profiles of isoforms in testing dataset
-
-    ./data_demo/test_feature/iso_seqdm.txt -- sequence features of isoforms in testing dataset
-
-（4) PPI data
-
-    ./data_demo/iso_PPI_demo.txt
-
 
 ## 3. Implementation
 CrossIsoFun is implemented in Python. It is tested on both MacOS and Linux operating systems. They are freely available for non-commercial use.
@@ -49,17 +26,35 @@ scikit-learn >= 1.3.0
 torch_scatter >= 2.1.2+pt20cu117
 
 ## 5. Usage
-We provide a demo script to show how to run CrossIsoFun. To test CrossIsoFun on an independent test dataset, run the following command from the command line:
+We provide a demo script to show how to run CrossIsoFun. Run the following command from the command line:
 
 ```bash
-python CrossIsoFun.py ./data_demo/train_feature/ ./data_demo/test_feature/ ./data_demo/train_label_folder
+python CrossIsoFun.py ./data_demo/train_feature/ ./data_demo/test_feature/ ./data_demo/train_label_folder/ ./data_demo/output/
 ```
 
-With this command, we will first build a model on the training data and then make predictions on the test data. 
+With this command, you can straightforwardly implement and apply CrossIsoFun. It will first train a model and then make predictions on the demo data. Specifically, the input for the script includes:
+:
 The output will be text file storing a matrix (m*n) denoting the prediction scores of isoforms, where m is the number of isoforms in testing set,
 n is the number of predicted functions (GO terms), and the entry (Xij) denotes the predicted probability of the isoform i being annotated to the function j.
 The outpput file is named 'iso_score.txt' and will be in the ./data_demo/output.
 
+['./data_demo/train_feature/'](./data_demo/train_feature/) contains feature files for the training dataset, including `iso_expr.txt`, `iso_seqdm.txt`, `iso_gene.txt`, and `train_isoform_list.txt`. Specifically:
+- `iso_expr.txt` contains the expression profiles of isoforms in the training set.
+- `iso_seqdm.txt` contains the sequence features of isoforms in the training set.
+- `iso_gene.txt` records the mapping relationships between isoforms and genes in the training set.
+- `train_isoform_list.txt` lists the isoforms used as training samples
+
+['./data_demo/train_labels/']('./data_demo/train_labels/') contains files related to the GO annotations used as training labels, including `num_GO_map.txt`, and the `goterms/` directory. Specifically:
+- `num_GO_map.txt` records the mapping from GO terms to their indices in the experiment
+- The `goterms/` directory contains the files listing the genes annotated to the GO terms. e.g. `GO_0000278.txt` provides a list genes annotated to GO:0000278. 
+
+['./data_demo/test_feature/'](./data_demo/train_feature/) contains feature files for the testing dataset, including `iso_expr.txt`, `iso_seqdm.txt`, `iso_gene.txt`, and `train_isoform_list.txt`. Specifically:
+- `iso_expr.txt` contains the expression profiles of isoforms in the testinging set.
+- `iso_seqdm.txt` contains the sequence features of isoforms in the testinging set.
+- `iso_gene.txt` records the mapping relationships between isoforms and genes in the testinging set.
+- `train_isoform_list.txt` lists the isoforms used as testing samples
+
+['./data_demo/output/'](./data_demo/output/) is the directory used for storing the output file `iso_score.txt`. Specifically, `iso_score.txt` will be a matrix (m &times; n) where each row corresponds to an isoform and each column corresponds to a GO term (function), e.g. the entry X<sub>ij in this matrix is defined as the predicted probability of the isoform i being annotated to the GO term j.
 
 ## 6. Contact
 If any questions, please do not hesitate to contact me at:
