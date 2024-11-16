@@ -59,7 +59,7 @@ def read_PPI(data_folder, iso_gene_ordered):
     iso_PPI.index = range(len(iso_PPI))
     return iso_PPI
 
-def read_feature(data_folder, iso_gene):
+def read_feature(train_data_folder, test_data_folder, data_folder, iso_gene):
     gene_in_order = iso_gene[1].drop_duplicates(keep='first').tolist()
     iso_gene_new_idx = []
     for gene in gene_in_order:
@@ -71,19 +71,33 @@ def read_feature(data_folder, iso_gene):
     ###################################################expr############################################################
     expr_dict = {}
 
-    isoexpr = pd.read_csv(data_folder + '/iso_expr_demo.tsv', sep='\t', header=None).iloc[iso_gene_new_idx, :]
-    isoexpr.index = range(len(isoexpr))
-    num_isoexpr = isoexpr.drop([0,1], axis=1).values
+    isoexpr_train = pd.read_csv(train_data_folder + '/iso_expr.txt', sep='\t', header=None)
+    isoexpr_train.index = range(len(isoexpr_train))
+    num_isoexpr_train = isoexpr_train.drop([0,1], axis=1).values
+
+    isoexpr_test = pd.read_csv(test_data_folder + '/iso_expr.txt', sep='\t', header=None)
+    isoexpr_test.index = range(len(isoexpr_test))
+    num_isoexpr_test = isoexpr_train.drop([0,1], axis=1).values
+
+    num_isoexpr = np.vstack([num_isoexpr_train, num_isoexpr_test])
     num_isoexpr = num_isoexpr / np.max(abs(num_isoexpr))
+    num_isoexpr = num_isoexpr[iso_gene_new_idx, :]
 
     expr_dict['iso'] = num_isoexpr
     ###################################################seqdm############################################################
     seqdm_dict = {}
 
-    isoseqdm = pd.read_csv(data_folder + '/iso_seqdm_demo.tsv', sep='\t', header=None).iloc[iso_gene_new_idx, :]
-    isoseqdm.index = range(len(isoseqdm))
-    seqdm = isoseqdm.drop([0, 1], axis=1).values
-    num_isoseqdm = seqdm / np.max(abs(seqdm), axis=0)
+    isoseqdm_train = pd.read_csv(train_data_folder + '/iso_seqdm.txt', sep='\t', header=None)
+    isoseqdm_train.index = range(len(isoseqdm_train))
+    num_isoseqdm_train = isoseqdm_train.drop([0,1], axis=1).values
+
+    isoseqdm_test = pd.read_csv(test_data_folder + '/iso_seqdm.txt', sep='\t', header=None)
+    isoseqdm_test.index = range(len(isoseqdm_test))
+    num_isoseqdm_test = isoseqdm_test.drop([0,1], axis=1).values
+
+    num_isoseqdm = np.vstack([num_isoseqdm_train, num_isoseqdm_test])
+    num_isoseqdm = num_isoseqdm / np.max(abs(num_isoseqdm), axis=0)
+    num_isoseqdm = num_isoseqdm[iso_gene_new_idx, :]
 
     seqdm_dict['iso'] = num_isoseqdm
     ###################################################PPI############################################################
@@ -109,10 +123,10 @@ def read_feature(data_folder, iso_gene):
     return feature_list, feature_name, iso_gene_ordered
 
 
-def train_test_partition(data_folder, iso_gene):
+def train_test_partition(train_data_folder, test_data_folder, iso_gene):
     ###training data
 
-    iso_of_train_gene = read_train_isoform(data_folder, iso_gene)
+    iso_of_train_gene = read_train_isoform(train_data_folder, iso_gene)
 
     sig_flag = get_sig_flag(iso_gene)
     mig_flag = np.array([not x for x in sig_flag])
@@ -130,7 +144,7 @@ def train_test_partition(data_folder, iso_gene):
 
     ###testing data
 
-    iso_of_test_gene = read_test_isoform(data_folder, iso_gene)
+    iso_of_test_gene = read_test_isoform(test_data_folder, iso_gene)
 
     test_iso_mask_paired = np.array(sig_flag).copy()
     test_iso_mask_unpaired = np.array(mig_flag).copy()
@@ -224,15 +238,19 @@ def GO_annotation(data_folder, num_iso, num_GO, iso_gene):
     return GO_annotation_matrix
 
 
-def prepare_trte_data(data_folder):
-    iso_gene = pd.read_csv(data_folder + 'iso_gene.txt', sep='\t', header=None)
+def prepare_trte_data(train_data_folder, test_data_folder, train_label_folder, data_folder):
+    iso_gene_tr = pd.read_csv(train_data_folder + 'iso_gene.txt', sep='\t', header=None)
+    iso_gene_te = pd.read_csv(test_data_folder + 'iso_gene.txt', sep='\t', header=None)
+    iso_gene = pd.concat([iso_gene_tr, iso_gene_te], axis=0)
+    iso_gene.index = range(len(iso_gene))
+    print(iso_gene)
 
     ### features
-    feature_list, feature_name, iso_gene = read_feature(data_folder, iso_gene)
+    feature_list, feature_name, iso_gene = read_feature(train_data_folder, train_data_folder, data_folder, iso_gene)
     num_feature = len(feature_list)
 
     train_iso_mask_paired, train_iso_mask_unpaired, test_iso_mask_paired, test_iso_mask_unpaired, iso_gene_trte \
-        = train_test_partition(data_folder, iso_gene)
+        = train_test_partition(train_data_folder, test_data_folder, iso_gene)
 
     data_tr_list_paired = []  # [tr_expr_matrix,tr_seqdm_matrix,tr_PPI_matrix]
     data_tr_list_unpaired = []  # [tr_expr_matrix_unpaired,tr_seqdm_matrix_unpaired,tr_PPI_matrix_unpaired]
@@ -244,6 +262,8 @@ def prepare_trte_data(data_folder):
         data_tr_list_unpaired.append(feature_list[i]['iso'][train_iso_mask_unpaired])
         data_te_list_paired.append(feature_list[i]['iso'][test_iso_mask_paired])
         data_te_list_unpaired.append(feature_list[i]['iso'][test_iso_mask_unpaired])
+
+    iso2gene_te = np.vstack([iso_gene.values[test_iso_mask_paired],iso_gene.values[test_iso_mask_unpaired]])
 
     num_tr_paired = data_tr_list_paired[0].shape[0]  # 训练paired样本数量
     num_tr_unpaired = data_tr_list_unpaired[0].shape[0]  # 训练unpaired样本数量
@@ -284,12 +304,12 @@ def prepare_trte_data(data_folder):
     print('feature shape: ' + str(data_all_list[0].shape) + str(data_all_list[1].shape) + str(data_all_list[2].shape))
 
     num_iso = iso_gene.shape[0]
-    file = data_folder + 'num_GO_map.txt'
+    file = train_label_folder + 'num_GO_map.txt'
     GO_list = pd.read_csv(file, header=None, index_col=None, sep='\t')[1].tolist()
     num_GO = len(GO_list)
 
     # labels
-    iso_annotation = GO_annotation(data_folder, num_iso, num_GO, iso_gene)
+    iso_annotation = GO_annotation(train_label_folder, num_iso, num_GO, iso_gene)
 
     out_train_iso_label_paired = iso_annotation[train_iso_mask_paired]
     out_train_iso_label_unpaired = iso_annotation[train_iso_mask_unpaired]
@@ -350,4 +370,4 @@ def prepare_trte_data(data_folder):
         iso2gene.append(idx)
     iso2gene = torch.tensor(np.array(iso2gene)).to(torch.int64)
 
-    return data_train_list, data_all_list, iso_idx_dict, labels, labels_idx_dict, iso_gene_trte, iso2gene, new_order,GO_list
+    return data_train_list, data_all_list, iso_idx_dict, labels, labels_idx_dict, iso_gene_trte, iso2gene, new_order,GO_list, pd.DataFrame(iso2gene_te)
