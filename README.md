@@ -34,9 +34,6 @@ python CrossIsoFun.py ./data_demo/train_feature/ ./data_demo/test_feature/ ./dat
 
 With this command, you can straightforwardly implement and apply CrossIsoFun. It will first train a model and then make predictions on the demo data. Specifically, the input for the script includes:
 :
-The output will be text file storing a matrix (m*n) denoting the prediction scores of isoforms, where m is the number of isoforms in testing set,
-n is the number of predicted functions (GO terms), and the entry (Xij) denotes the predicted probability of the isoform i being annotated to the function j.
-The outpput file is named 'iso_score.txt' and will be in the ./data_demo/output.
 
 ['./data_demo/train_feature/'](./data_demo/train_feature/) contains feature files for the training dataset, including `iso_expr.txt`, `iso_seqdm.txt`, `iso_gene.txt`, and `train_isoform_list.txt`. Specifically:
 - `iso_expr.txt` contains the expression profiles of isoforms in the training set.
@@ -54,7 +51,7 @@ The outpput file is named 'iso_score.txt' and will be in the ./data_demo/output.
 - `iso_gene.txt` records the mapping relationships between isoforms and genes in the testinging set.
 - `train_isoform_list.txt` lists the isoforms used as testing samples
 
-['./data_demo/output/'](./data_demo/output/) is the directory used for storing the output file `iso_score.txt`. Specifically, `iso_score.txt` will be a matrix (m &times; n) where each row corresponds to an isoform and each column corresponds to a GO term (function), e.g. the entry X<sub>ij in this matrix is defined as the predicted probability of the isoform i being annotated to the GO term j.
+['./data_demo/output/'](./data_demo/output/) is the directory used to store the output file `iso_score.txt`. Specifically, `iso_score.txt` is a matrix containing the prediction scores obtained from CrossIsoFun. Each row of the matrix corresponds to an isoform and each column corresponds to a GO term (function). e.g. X<sub>ij</sub> is defined as the predicted probability that isoform i is annotated to the GO term j.
 
 ## 6. Contact
 If any questions, please do not hesitate to contact me at:
