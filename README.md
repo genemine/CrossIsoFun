@@ -40,7 +40,7 @@ With this command, you can straightforwardly implement and apply CrossIsoFun. It
 - `iso_gene.txt` records the mapping relationships between isoforms and genes in the training set.
 - `train_isoform_list.txt` lists the isoforms used as training samples
 
-['./data_demo/train_labels/']('./data_demo/train_labels/') contains files related to the GO annotations used as training labels, including `num_GO_map.txt`, and the `goterms/` directory. Specifically:
+['./data_demo/train_labels/']('./data_demo/train_labels/') contains files providin information about the GO annotations used as training labels, including `num_GO_map.txt`, and the `goterms/` directory. Specifically:
 - `num_GO_map.txt` records the mapping from GO terms to their indices in the experiment
 - The `goterms/` directory contains the files listing the genes annotated to the GO terms. e.g. `GO_0000278.txt` provides a list genes annotated to GO:0000278. 
 
