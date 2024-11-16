@@ -5,17 +5,30 @@ CrossIsoFun is a multi-omics data integration framework for isoform function pre
 
 ## 2. Input data
 The expression profiles, sequence features, and PPI data of isoforms are required as input for CrossIsoFun. The demo input data are provided in the folder 'data_demo', which includes training data for building models and test data for evaluating the performance of CrossIsoFun.
+
 （1) training data
+
     ./data_demo/train_feature/iso_expr.txt -- expression profiles of isoforms in training dataset
+
     ./data_demo/train_feature/iso_seqdm.txt -- sequence features of isoforms in training dataset
+
+
 （2) training labels
+
     ./data_demo/train_labels/num_GO_map.txt -- mapping from GO terms to their indices in the experiment
+
     ./data_demo/train_feature/goterms/GO_XXXXXXX.txt -- genes annotated to the GO term GO:XXXXXXX 
+
 （3) testing data
+
     ./data_demo/test_feature/iso_expr.txt -- expression profiles of isoforms in testing dataset
+
     ./data_demo/test_feature/iso_seqdm.txt -- sequence features of isoforms in testing dataset
+
 （4) PPI data
+
     ./data_demo/iso_PPI_demo.txt
+
 
 ## 3. Implementation
 CrossIsoFun is implemented in Python. It is tested on both MacOS and Linux operating systems. They are freely available for non-commercial use.
