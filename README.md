@@ -32,8 +32,7 @@ We provide a demo script to show how to run CrossIsoFun. Run the following comma
 python CrossIsoFun.py ./data_demo/train_feature/ ./data_demo/test_feature/ ./data_demo/train_label_folder/ ./data_demo/output/
 ```
 
-With this command, you can straightforwardly implement and apply CrossIsoFun. It will first train a model and then make predictions on the demo data. Specifically, the input for the script includes:
-:
+With this command, you can straightforwardly implement and apply CrossIsoFun. It will first train a model and then make predictions on the demo data. Specifically, the input for the script includes four directories:
 
 ['./data_demo/train_feature/'](./data_demo/train_feature/) contains feature files for the training dataset, including `iso_expr.txt`, `iso_seqdm.txt`, `iso_gene.txt`, and `train_isoform_list.txt`. Specifically:
 - `iso_expr.txt` contains the expression profiles of isoforms in the training set.
