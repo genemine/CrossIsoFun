@@ -15,10 +15,13 @@ from cal_auc import *
 from generate_adj_matrix import *
 from tqdm import tqdm
 from read_data import *
+import sys
+
 
 opt = TrainOptions().parse()
 device = torch.device('cuda:0' if torch.cuda.is_available() else "cpu")
 
+train_data_folder, test_data_folder, train_label_folder, output_folder = opt.train_feature,opt.test_feature,opt.train_label,opt.output
 
 def init_loss_dict(loss_type_list):
     loss_dict_init = {}
@@ -26,12 +29,13 @@ def init_loss_dict(loss_type_list):
         loss_dict_init[loss_type] = []
     return loss_dict_init
 
-def train_test(data_folder):
+def train_test(train_data_folder, test_data_folder, train_label_folder, output_folder):
 
     test_inverval = 5
 
-    data_tr_list, data_trte_list, trte_pair_unpair_idx, labels_trte, labels_trte_idx, iso_gene_trte, iso2gene, new_order, GO_list \
-        = prepare_trte_data(data_folder)
+    data_folder = './data_demo/'
+    data_tr_list, data_trte_list, trte_pair_unpair_idx, labels_trte, labels_trte_idx, iso_gene_trte, iso2gene, new_order, GO_list, iso2gene_te \
+        = prepare_trte_data(train_data_folder, test_data_folder, train_label_folder, data_folder)
 
     num_GOterm = opt.num_GO
 
@@ -140,6 +144,9 @@ def train_test(data_folder):
     trte_idx = {'tr': trte_pair_unpair_idx["tr_paired"] + trte_pair_unpair_idx["tr_unpaired"],
                 'te': trte_pair_unpair_idx["te_paired"] + trte_pair_unpair_idx["te_unpaired"]}
 
+    test_iso_score_all = []
+    test_auc_all = []
+
     ####################generat III data##############################
 
     data_tr_index = list(iso_gene_tr[0].values[:, 0]) + list(iso_gene_tr[1].values[:, 0])
@@ -236,6 +243,10 @@ def train_test(data_folder):
     print("\n Train GCN + VCDN...")
     epoch_train_GCN_VCDN = 150
 
+    for train_GO_index in range(labels_trte.shape[1]):
+        test_auc_all.append([])
+        test_iso_score_all.append([])
+
     for epoch in range(1, epoch_train_GCN_VCDN + 1):
 
         print('start training VCDN')
@@ -321,6 +332,10 @@ def train_test(data_folder):
                     else:
                         train_auc = -1
 
+                    test_auc_all[train_GO_index].append(test_auc)
+                    test_iso_score_all[train_GO_index].append(pred_prob[trte_idx['te'], train_GO_index])
+
+
                 print("Test AUC: {:.6f}".format(np.median(test_aucs)))
                 print("Test AUPRC: {:.6f}".format(np.median(test_auprcs)))
                 print("SIG-level Test AUPRC: {:.6f}".format(np.median(test_sig_auprcs)))
@@ -332,3 +347,15 @@ def train_test(data_folder):
 
     print('End of training phase \t Time Taken: %d sec' %
           (time.time() - start))
+
+
+    GO_iso_score = []
+    for GO in range(len(test_iso_score_all)):
+        best_index = test_auc_all[GO].index(max(test_auc_all[GO]))
+        GO_iso_score.append(test_iso_score_all[GO][best_index])
+
+    iso_score_df = pd.DataFrame(GO_iso_score).T
+    iso_score_df = pd.concat([iso2gene_te, iso_score_df], axis=1)
+    iso_score_df.to_csv(
+        output_folder + '/iso_score.txt',
+        sep='\t', index=False, header=False)
