@@ -29,10 +29,6 @@ torch_scatter >= 2.1.2+pt20cu117
 We provide a demo script to show how to run CrossIsoFun. Run the following command from the command line:
 
 ```bash
-python CrossIsoFun.py --train_feature ./data_demo/train_feature/ --test_feature ./data_demo/test_feature/ --train_label ./data_demo/train_label/ --output ./data_demo/output/
-
--> 
-
 python CrossIsoFun.py --train_feature ./data_demo/train_feature/  --train_label ./data_demo/train_label/ --test_feature ./data_demo/test_feature/ --output ./data_demo/output/
 ```
 
